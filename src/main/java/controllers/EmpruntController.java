@@ -1,5 +1,6 @@
 package controllers;
 
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -59,8 +60,8 @@ public class EmpruntController {
     @FXML
     private void initialize() {
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        livreColumn.setCellValueFactory(param -> FXCollections.observableValue(getLivreTitle(param.getValue().getLivreId())));
-        membreColumn.setCellValueFactory(param -> FXCollections.observableValue(getMembreName(param.getValue().getMembreId())));
+        livreColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(getLivreTitle(param.getValue().getLivreId())));
+        membreColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(getMembreName(param.getValue().getMembreId())));
         dateEmpruntColumn.setCellValueFactory(new PropertyValueFactory<>("dateEmprunt"));
         dateRetourColumn.setCellValueFactory(new PropertyValueFactory<>("dateRetour"));
         statutColumn.setCellValueFactory(new PropertyValueFactory<>("statut"));
