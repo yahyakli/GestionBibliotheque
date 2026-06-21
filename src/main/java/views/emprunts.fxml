@@ -1,0 +1,12 @@
+package views;
+
+import controllers.EmpruntController;
+import javafx.scene.Node;
+
+public class emprunts {
+    private final EmpruntController controller = new EmpruntController();
+
+    public Node getView() {
+        return controller.getView();
+    }
+}

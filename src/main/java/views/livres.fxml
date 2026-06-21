@@ -1,0 +1,12 @@
+package views;
+
+import controllers.LivreController;
+import javafx.scene.Node;
+
+public class livres {
+    private final LivreController controller = new LivreController();
+
+    public Node getView() {
+        return controller.getView();
+    }
+}

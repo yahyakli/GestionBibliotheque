@@ -1,0 +1,12 @@
+package views;
+
+import controllers.MembreController;
+import javafx.scene.Node;
+
+public class membres {
+    private final MembreController controller = new MembreController();
+
+    public Node getView() {
+        return controller.getView();
+    }
+}
