@@ -9,7 +9,7 @@ import java.util.List;
 public class LivreDAO {
     public List<Livre> findAll() {
         List<Livre> livres = new ArrayList<>();
-        String sql = "SELECT id, titre, auteur, categorie, quantite FROM livres ORDER BY id DESC";
+        String sql = "SELECT id, titre, auteur, categorie, isbn, editeur, date_publication, emplacement, quantite FROM livres ORDER BY id DESC";
 
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -20,6 +20,10 @@ public class LivreDAO {
                         resultSet.getString("titre"),
                         resultSet.getString("auteur"),
                         resultSet.getString("categorie"),
+                        resultSet.getString("isbn"),
+                        resultSet.getString("editeur"),
+                        resultSet.getString("date_publication"),
+                        resultSet.getString("emplacement"),
                         resultSet.getInt("quantite")
                 );
                 livres.add(livre);
@@ -32,13 +36,17 @@ public class LivreDAO {
     }
 
     public boolean create(Livre livre) {
-        String sql = "INSERT INTO livres (titre, auteur, categorie, quantite) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO livres (titre, auteur, categorie, isbn, editeur, date_publication, emplacement, quantite) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, livre.getTitre());
             statement.setString(2, livre.getAuteur());
             statement.setString(3, livre.getCategorie());
-            statement.setInt(4, livre.getQuantite());
+            statement.setString(4, livre.getIsbn());
+            statement.setString(5, livre.getEditeur());
+            statement.setString(6, livre.getDatePublication());
+            statement.setString(7, livre.getEmplacement());
+            statement.setInt(8, livre.getQuantite());
             return statement.executeUpdate() == 1;
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,14 +55,18 @@ public class LivreDAO {
     }
 
     public boolean update(Livre livre) {
-        String sql = "UPDATE livres SET titre = ?, auteur = ?, categorie = ?, quantite = ? WHERE id = ?";
+        String sql = "UPDATE livres SET titre = ?, auteur = ?, categorie = ?, isbn = ?, editeur = ?, date_publication = ?, emplacement = ?, quantite = ? WHERE id = ?";
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, livre.getTitre());
             statement.setString(2, livre.getAuteur());
             statement.setString(3, livre.getCategorie());
-            statement.setInt(4, livre.getQuantite());
-            statement.setInt(5, livre.getId());
+            statement.setString(4, livre.getIsbn());
+            statement.setString(5, livre.getEditeur());
+            statement.setString(6, livre.getDatePublication());
+            statement.setString(7, livre.getEmplacement());
+            statement.setInt(8, livre.getQuantite());
+            statement.setInt(9, livre.getId());
             return statement.executeUpdate() == 1;
         } catch (Exception e) {
             e.printStackTrace();
@@ -75,7 +87,7 @@ public class LivreDAO {
     }
 
     public Livre findById(int id) {
-        String sql = "SELECT id, titre, auteur, categorie, quantite FROM livres WHERE id = ?";
+        String sql = "SELECT id, titre, auteur, categorie, isbn, editeur, date_publication, emplacement, quantite FROM livres WHERE id = ?";
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, id);
@@ -86,6 +98,10 @@ public class LivreDAO {
                             resultSet.getString("titre"),
                             resultSet.getString("auteur"),
                             resultSet.getString("categorie"),
+                            resultSet.getString("isbn"),
+                            resultSet.getString("editeur"),
+                            resultSet.getString("date_publication"),
+                            resultSet.getString("emplacement"),
                             resultSet.getInt("quantite")
                     );
                 }

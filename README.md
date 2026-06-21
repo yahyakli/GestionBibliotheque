@@ -14,7 +14,6 @@ Application JavaFX de gestion de bibliothèque avec une base SQLite locale.
 - `src/main/java/models` : classes métier et DAO
 - `src/main/java/controllers` : contrôleurs JavaFX pour les opérations CRUD
 - `src/main/java/views` : vues JavaFX et navigation par onglets
-- `schema.sql` : script SQL de création de la base de données
 
 ## Fonctionnalités
 

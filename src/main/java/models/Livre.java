@@ -5,21 +5,29 @@ public class Livre {
     private String titre;
     private String auteur;
     private String categorie;
+    private String isbn;
+    private String editeur;
+    private String datePublication;
+    private String emplacement;
     private int quantite;
 
     public Livre() {
     }
 
-    public Livre(int id, String titre, String auteur, String categorie, int quantite) {
+    public Livre(int id, String titre, String auteur, String categorie, String isbn, String editeur, String datePublication, String emplacement, int quantite) {
         this.id = id;
         this.titre = titre;
         this.auteur = auteur;
         this.categorie = categorie;
+        this.isbn = isbn;
+        this.editeur = editeur;
+        this.datePublication = datePublication;
+        this.emplacement = emplacement;
         this.quantite = quantite;
     }
 
-    public Livre(String titre, String auteur, String categorie, int quantite) {
-        this(0, titre, auteur, categorie, quantite);
+    public Livre(String titre, String auteur, String categorie, String isbn, String editeur, String datePublication, String emplacement, int quantite) {
+        this(0, titre, auteur, categorie, isbn, editeur, datePublication, emplacement, quantite);
     }
 
     public int getId() {
@@ -52,6 +60,38 @@ public class Livre {
 
     public void setCategorie(String categorie) {
         this.categorie = categorie;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public String getEditeur() {
+        return editeur;
+    }
+
+    public void setEditeur(String editeur) {
+        this.editeur = editeur;
+    }
+
+    public String getDatePublication() {
+        return datePublication;
+    }
+
+    public void setDatePublication(String datePublication) {
+        this.datePublication = datePublication;
+    }
+
+    public String getEmplacement() {
+        return emplacement;
+    }
+
+    public void setEmplacement(String emplacement) {
+        this.emplacement = emplacement;
     }
 
     public int getQuantite() {

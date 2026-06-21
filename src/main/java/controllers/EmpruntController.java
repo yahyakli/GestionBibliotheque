@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -17,6 +18,8 @@ import models.Livre;
 import models.LivreDAO;
 import models.Membre;
 import models.MembreDAO;
+
+import java.time.LocalDate;
 
 public class EmpruntController {
     @FXML
@@ -35,6 +38,9 @@ public class EmpruntController {
     private TableColumn<Emprunt, String> dateEmpruntColumn;
 
     @FXML
+    private TableColumn<Emprunt, String> dateRetourPrevueColumn;
+
+    @FXML
     private TableColumn<Emprunt, String> dateRetourColumn;
 
     @FXML
@@ -47,7 +53,13 @@ public class EmpruntController {
     private ComboBox<Membre> membreComboBox;
 
     @FXML
-    private TextField dateEmpruntField;
+    private DatePicker dateEmpruntPicker;
+
+    @FXML
+    private DatePicker dateRetourPrevuePicker;
+
+    @FXML
+    private TextField notesField;
 
     private final EmpruntDAO empruntDAO = new EmpruntDAO();
     private final LivreDAO livreDAO = new LivreDAO();
@@ -63,13 +75,15 @@ public class EmpruntController {
         livreColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(getLivreTitle(param.getValue().getLivreId())));
         membreColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(getMembreName(param.getValue().getMembreId())));
         dateEmpruntColumn.setCellValueFactory(new PropertyValueFactory<>("dateEmprunt"));
+        dateRetourPrevueColumn.setCellValueFactory(new PropertyValueFactory<>("dateRetourPrevue"));
         dateRetourColumn.setCellValueFactory(new PropertyValueFactory<>("dateRetour"));
         statutColumn.setCellValueFactory(new PropertyValueFactory<>("statut"));
 
         tableView.setItems(emprunts);
         tableView.setPlaceholder(new Label("Aucun emprunt trouvé"));
 
-        dateEmpruntField.setText(java.time.LocalDate.now().toString());
+        dateEmpruntPicker.setValue(LocalDate.now());
+        dateRetourPrevuePicker.setValue(LocalDate.now().plusWeeks(2));
 
         refreshLists();
     }
@@ -80,6 +94,12 @@ public class EmpruntController {
         emprunts.setAll(empruntDAO.findAll());
         livreComboBox.setItems(livres);
         membreComboBox.setItems(membres);
+    }
+
+    @FXML
+    private void refreshEmprunts() {
+        refreshLists();
+        showAlert(Alert.AlertType.INFORMATION, "Mise à jour", "Liste des emprunts rafraîchie.");
     }
 
     private String getLivreTitle(int id) {
@@ -100,14 +120,23 @@ public class EmpruntController {
     private void addEmprunt() {
         Livre livre = livreComboBox.getValue();
         Membre membre = membreComboBox.getValue();
-        String dateEmprunt = dateEmpruntField.getText().trim();
+        LocalDate dateEmprunt = dateEmpruntPicker.getValue();
+        LocalDate dateRetourPrevue = dateRetourPrevuePicker.getValue();
+        String notes = notesField.getText().trim();
 
-        if (livre == null || membre == null || dateEmprunt.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation", "Veuillez sélectionner un livre, un membre et une date d'emprunt.");
+        if (livre == null || membre == null || dateEmprunt == null || dateRetourPrevue == null) {
+            showAlert(Alert.AlertType.WARNING, "Validation", "Veuillez sélectionner un livre, un membre et les dates requis.");
             return;
         }
 
-        Emprunt emprunt = new Emprunt(livre.getId(), membre.getId(), dateEmprunt, "En cours");
+        Emprunt emprunt = new Emprunt(
+                livre.getId(),
+                membre.getId(),
+                dateEmprunt.toString(),
+                dateRetourPrevue.toString(),
+                "En cours",
+                notes
+        );
         if (!empruntDAO.create(emprunt)) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de créer l'emprunt. Vérifiez la quantité du livre.");
             return;

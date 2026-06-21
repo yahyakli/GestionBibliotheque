@@ -9,7 +9,7 @@ import java.util.List;
 public class EmpruntDAO {
     public List<Emprunt> findAll() {
         List<Emprunt> emprunts = new ArrayList<>();
-        String sql = "SELECT id, livre_id, membre_id, date_emprunt, date_retour, statut FROM emprunts ORDER BY id DESC";
+        String sql = "SELECT id, livre_id, membre_id, date_emprunt, date_retour, date_retour_prevue, statut, notes FROM emprunts ORDER BY id DESC";
 
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -21,7 +21,9 @@ public class EmpruntDAO {
                         resultSet.getInt("membre_id"),
                         resultSet.getString("date_emprunt"),
                         resultSet.getString("date_retour"),
-                        resultSet.getString("statut")
+                        resultSet.getString("date_retour_prevue"),
+                        resultSet.getString("statut"),
+                        resultSet.getString("notes")
                 );
                 emprunts.add(emprunt);
             }
@@ -37,7 +39,7 @@ public class EmpruntDAO {
             return false;
         }
 
-        String insertSql = "INSERT INTO emprunts (livre_id, membre_id, date_emprunt, statut) VALUES (?, ?, ?, ?)";
+        String insertSql = "INSERT INTO emprunts (livre_id, membre_id, date_emprunt, date_retour_prevue, statut, notes) VALUES (?, ?, ?, ?, ?, ?)";
         String updateLivreSql = "UPDATE livres SET quantite = quantite - 1 WHERE id = ?";
 
         try (Connection connection = DBConnection.getConnection()) {
@@ -51,7 +53,9 @@ public class EmpruntDAO {
                 insertEmprunt.setInt(1, emprunt.getLivreId());
                 insertEmprunt.setInt(2, emprunt.getMembreId());
                 insertEmprunt.setString(3, emprunt.getDateEmprunt());
-                insertEmprunt.setString(4, emprunt.getStatut());
+                insertEmprunt.setString(4, emprunt.getDateRetourPrevue());
+                insertEmprunt.setString(5, emprunt.getStatut());
+                insertEmprunt.setString(6, emprunt.getNotes());
                 insertEmprunt.executeUpdate();
             }
 

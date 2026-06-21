@@ -9,7 +9,7 @@ import java.util.List;
 public class MembreDAO {
     public List<Membre> findAll() {
         List<Membre> membres = new ArrayList<>();
-        String sql = "SELECT id, nom, email, telephone, date_inscription FROM membres ORDER BY id DESC";
+        String sql = "SELECT id, nom, email, telephone, adresse, date_naissance, date_inscription, type_adherent, statut FROM membres ORDER BY id DESC";
 
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -20,7 +20,11 @@ public class MembreDAO {
                         resultSet.getString("nom"),
                         resultSet.getString("email"),
                         resultSet.getString("telephone"),
-                        resultSet.getString("date_inscription")
+                        resultSet.getString("adresse"),
+                        resultSet.getString("date_naissance"),
+                        resultSet.getString("date_inscription"),
+                        resultSet.getString("type_adherent"),
+                        resultSet.getString("statut")
                 );
                 membres.add(membre);
             }
@@ -32,13 +36,17 @@ public class MembreDAO {
     }
 
     public boolean create(Membre membre) {
-        String sql = "INSERT INTO membres (nom, email, telephone, date_inscription) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO membres (nom, email, telephone, adresse, date_naissance, date_inscription, type_adherent, statut) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, membre.getNom());
             statement.setString(2, membre.getEmail());
             statement.setString(3, membre.getTelephone());
-            statement.setString(4, membre.getDateInscription());
+            statement.setString(4, membre.getAdresse());
+            statement.setString(5, membre.getDateNaissance());
+            statement.setString(6, membre.getDateInscription());
+            statement.setString(7, membre.getTypeAdherent());
+            statement.setString(8, membre.getStatut());
             return statement.executeUpdate() == 1;
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,14 +55,18 @@ public class MembreDAO {
     }
 
     public boolean update(Membre membre) {
-        String sql = "UPDATE membres SET nom = ?, email = ?, telephone = ?, date_inscription = ? WHERE id = ?";
+        String sql = "UPDATE membres SET nom = ?, email = ?, telephone = ?, adresse = ?, date_naissance = ?, date_inscription = ?, type_adherent = ?, statut = ? WHERE id = ?";
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, membre.getNom());
             statement.setString(2, membre.getEmail());
             statement.setString(3, membre.getTelephone());
-            statement.setString(4, membre.getDateInscription());
-            statement.setInt(5, membre.getId());
+            statement.setString(4, membre.getAdresse());
+            statement.setString(5, membre.getDateNaissance());
+            statement.setString(6, membre.getDateInscription());
+            statement.setString(7, membre.getTypeAdherent());
+            statement.setString(8, membre.getStatut());
+            statement.setInt(9, membre.getId());
             return statement.executeUpdate() == 1;
         } catch (Exception e) {
             e.printStackTrace();
@@ -75,7 +87,7 @@ public class MembreDAO {
     }
 
     public Membre findById(int id) {
-        String sql = "SELECT id, nom, email, telephone, date_inscription FROM membres WHERE id = ?";
+        String sql = "SELECT id, nom, email, telephone, adresse, date_naissance, date_inscription, type_adherent, statut FROM membres WHERE id = ?";
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, id);
@@ -86,7 +98,11 @@ public class MembreDAO {
                             resultSet.getString("nom"),
                             resultSet.getString("email"),
                             resultSet.getString("telephone"),
-                            resultSet.getString("date_inscription")
+                            resultSet.getString("adresse"),
+                            resultSet.getString("date_naissance"),
+                            resultSet.getString("date_inscription"),
+                            resultSet.getString("type_adherent"),
+                            resultSet.getString("statut")
                     );
                 }
             }

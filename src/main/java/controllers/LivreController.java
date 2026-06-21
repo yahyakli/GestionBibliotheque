@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -29,6 +30,18 @@ public class LivreController {
     private TableColumn<Livre, String> categorieColumn;
 
     @FXML
+    private TableColumn<Livre, String> isbnColumn;
+
+    @FXML
+    private TableColumn<Livre, String> editeurColumn;
+
+    @FXML
+    private TableColumn<Livre, String> datePublicationColumn;
+
+    @FXML
+    private TableColumn<Livre, String> emplacementColumn;
+
+    @FXML
     private TableColumn<Livre, Integer> quantiteColumn;
 
     @FXML
@@ -39,6 +52,18 @@ public class LivreController {
 
     @FXML
     private TextField categorieField;
+
+    @FXML
+    private TextField isbnField;
+
+    @FXML
+    private TextField editeurField;
+
+    @FXML
+    private DatePicker datePublicationPicker;
+
+    @FXML
+    private TextField emplacementField;
 
     @FXML
     private TextField quantiteField;
@@ -52,6 +77,10 @@ public class LivreController {
         titreColumn.setCellValueFactory(new PropertyValueFactory<>("titre"));
         auteurColumn.setCellValueFactory(new PropertyValueFactory<>("auteur"));
         categorieColumn.setCellValueFactory(new PropertyValueFactory<>("categorie"));
+        isbnColumn.setCellValueFactory(new PropertyValueFactory<>("isbn"));
+        editeurColumn.setCellValueFactory(new PropertyValueFactory<>("editeur"));
+        datePublicationColumn.setCellValueFactory(new PropertyValueFactory<>("datePublication"));
+        emplacementColumn.setCellValueFactory(new PropertyValueFactory<>("emplacement"));
         quantiteColumn.setCellValueFactory(new PropertyValueFactory<>("quantite"));
 
         tableView.setItems(livres);
@@ -73,13 +102,25 @@ public class LivreController {
         titreField.setText(livre.getTitre());
         auteurField.setText(livre.getAuteur());
         categorieField.setText(livre.getCategorie());
+        isbnField.setText(livre.getIsbn());
+        editeurField.setText(livre.getEditeur());
+        emplacementField.setText(livre.getEmplacement());
         quantiteField.setText(String.valueOf(livre.getQuantite()));
+        if (livre.getDatePublication() != null && !livre.getDatePublication().isEmpty()) {
+            datePublicationPicker.setValue(java.time.LocalDate.parse(livre.getDatePublication()));
+        } else {
+            datePublicationPicker.setValue(null);
+        }
     }
 
     private void clearForm() {
         titreField.clear();
         auteurField.clear();
         categorieField.clear();
+        isbnField.clear();
+        editeurField.clear();
+        emplacementField.clear();
+        datePublicationPicker.setValue(null);
         quantiteField.clear();
     }
 
@@ -88,7 +129,11 @@ public class LivreController {
         String titre = titreField.getText().trim();
         String auteur = auteurField.getText().trim();
         String categorie = categorieField.getText().trim();
+        String isbn = isbnField.getText().trim();
+        String editeur = editeurField.getText().trim();
+        String emplacement = emplacementField.getText().trim();
         String quantiteText = quantiteField.getText().trim();
+        String datePublication = datePublicationPicker.getValue() != null ? datePublicationPicker.getValue().toString() : null;
 
         if (titre.isEmpty() || auteur.isEmpty() || quantiteText.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Validation", "Veuillez saisir le titre, l'auteur et la quantité.");
@@ -107,7 +152,7 @@ public class LivreController {
             return;
         }
 
-        Livre livre = new Livre(titre, auteur, categorie, quantite);
+        Livre livre = new Livre(titre, auteur, categorie, isbn, editeur, datePublication, emplacement, quantite);
         if (livreDAO.create(livre)) {
             refreshList();
             clearForm();
@@ -128,7 +173,11 @@ public class LivreController {
         String titre = titreField.getText().trim();
         String auteur = auteurField.getText().trim();
         String categorie = categorieField.getText().trim();
+        String isbn = isbnField.getText().trim();
+        String editeur = editeurField.getText().trim();
+        String emplacement = emplacementField.getText().trim();
         String quantiteText = quantiteField.getText().trim();
+        String datePublication = datePublicationPicker.getValue() != null ? datePublicationPicker.getValue().toString() : null;
 
         if (titre.isEmpty() || auteur.isEmpty() || quantiteText.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Validation", "Veuillez saisir le titre, l'auteur et la quantité.");
@@ -150,6 +199,10 @@ public class LivreController {
         selectedLivre.setTitre(titre);
         selectedLivre.setAuteur(auteur);
         selectedLivre.setCategorie(categorie);
+        selectedLivre.setIsbn(isbn);
+        selectedLivre.setEditeur(editeur);
+        selectedLivre.setDatePublication(datePublication);
+        selectedLivre.setEmplacement(emplacement);
         selectedLivre.setQuantite(quantite);
 
         if (livreDAO.update(selectedLivre)) {
