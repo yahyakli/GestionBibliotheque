@@ -1,29 +1,27 @@
-package views;
-
-import javafx.scene.Node;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.layout.BorderPane;
-
-public class dashboard {
-    private final BorderPane root = new BorderPane();
-
-    public dashboard() {
-        TabPane tabPane = new TabPane();
-
-        Tab livresTab = new Tab("Livres", new livres().getView());
-        Tab membresTab = new Tab("Membres", new membres().getView());
-        Tab empruntsTab = new Tab("Emprunts", new emprunts().getView());
-
-        livresTab.setClosable(false);
-        membresTab.setClosable(false);
-        empruntsTab.setClosable(false);
-
-        tabPane.getTabs().addAll(livresTab, membresTab, empruntsTab);
-        root.setCenter(tabPane);
-    }
-
-    public Node getView() {
-        return root;
-    }
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<BorderPane xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1">
+    <center>
+        <TabPane>
+            <tabs>
+                <Tab text="Livres" closable="false">
+                    <content>
+                        <fx:include source="livres.fxml"/>
+                    </content>
+                </Tab>
+                <Tab text="Membres" closable="false">
+                    <content>
+                        <fx:include source="membres.fxml"/>
+                    </content>
+                </Tab>
+                <Tab text="Emprunts" closable="false">
+                    <content>
+                        <fx:include source="emprunts.fxml"/>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
+</BorderPane>

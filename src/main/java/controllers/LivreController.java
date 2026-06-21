@@ -2,92 +2,63 @@ package controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
+import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import models.Livre;
 import models.LivreDAO;
 
 public class LivreController {
+    @FXML
+    private TableView<Livre> tableView;
+
+    @FXML
+    private TableColumn<Livre, Integer> idColumn;
+
+    @FXML
+    private TableColumn<Livre, String> titreColumn;
+
+    @FXML
+    private TableColumn<Livre, String> auteurColumn;
+
+    @FXML
+    private TableColumn<Livre, String> categorieColumn;
+
+    @FXML
+    private TableColumn<Livre, Integer> quantiteColumn;
+
+    @FXML
+    private TextField titreField;
+
+    @FXML
+    private TextField auteurField;
+
+    @FXML
+    private TextField categorieField;
+
+    @FXML
+    private TextField quantiteField;
+
     private final LivreDAO livreDAO = new LivreDAO();
     private final ObservableList<Livre> livres = FXCollections.observableArrayList();
-    private final TableView<Livre> tableView = new TableView<>();
 
-    private final TextField titreField = new TextField();
-    private final TextField auteurField = new TextField();
-    private final TextField categorieField = new TextField();
-    private final TextField quantiteField = new TextField();
-
-    public Node getView() {
-        BorderPane root = new BorderPane();
-        root.setPadding(new Insets(12));
-
-        TableColumn<Livre, Integer> idColumn = new TableColumn<>("ID");
+    @FXML
+    private void initialize() {
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        idColumn.setPrefWidth(60);
-
-        TableColumn<Livre, String> titreColumn = new TableColumn<>("Titre");
         titreColumn.setCellValueFactory(new PropertyValueFactory<>("titre"));
-        titreColumn.setPrefWidth(280);
-
-        TableColumn<Livre, String> auteurColumn = new TableColumn<>("Auteur");
         auteurColumn.setCellValueFactory(new PropertyValueFactory<>("auteur"));
-        auteurColumn.setPrefWidth(200);
-
-        TableColumn<Livre, String> categorieColumn = new TableColumn<>("Catégorie");
         categorieColumn.setCellValueFactory(new PropertyValueFactory<>("categorie"));
-        categorieColumn.setPrefWidth(180);
-
-        TableColumn<Livre, Integer> quantiteColumn = new TableColumn<>("Quantité");
         quantiteColumn.setCellValueFactory(new PropertyValueFactory<>("quantite"));
-        quantiteColumn.setPrefWidth(100);
 
-        tableView.getColumns().addAll(idColumn, titreColumn, auteurColumn, categorieColumn, quantiteColumn);
         tableView.setItems(livres);
         tableView.setPlaceholder(new Label("Aucun livre trouvé"));
         tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> showSelectedLivre(newSelection));
 
-        GridPane form = new GridPane();
-        form.setHgap(10);
-        form.setVgap(10);
-        form.setPadding(new Insets(16, 0, 0, 0));
-
-        form.add(new Label("Titre"), 0, 0);
-        form.add(titreField, 1, 0);
-        form.add(new Label("Auteur"), 0, 1);
-        form.add(auteurField, 1, 1);
-        form.add(new Label("Catégorie"), 0, 2);
-        form.add(categorieField, 1, 2);
-        form.add(new Label("Quantité"), 0, 3);
-        form.add(quantiteField, 1, 3);
-
-        Button addButton = new Button("Ajouter");
-        Button updateButton = new Button("Modifier");
-        Button deleteButton = new Button("Supprimer");
-
-        addButton.setOnAction(event -> addLivre());
-        updateButton.setOnAction(event -> updateLivre());
-        deleteButton.setOnAction(event -> deleteLivre());
-
-        HBox actions = new HBox(10, addButton, updateButton, deleteButton);
-        actions.setPadding(new Insets(14, 0, 0, 0));
-
-        root.setCenter(tableView);
-        root.setRight(form);
-        root.setBottom(actions);
-        root.setPrefWidth(1000);
-
         refreshList();
-        return root;
     }
 
     private void refreshList() {
@@ -112,6 +83,7 @@ public class LivreController {
         quantiteField.clear();
     }
 
+    @FXML
     private void addLivre() {
         String titre = titreField.getText().trim();
         String auteur = auteurField.getText().trim();
@@ -145,6 +117,7 @@ public class LivreController {
         }
     }
 
+    @FXML
     private void updateLivre() {
         Livre selectedLivre = tableView.getSelectionModel().getSelectedItem();
         if (selectedLivre == null) {
@@ -188,6 +161,7 @@ public class LivreController {
         }
     }
 
+    @FXML
     private void deleteLivre() {
         Livre selectedLivre = tableView.getSelectionModel().getSelectedItem();
         if (selectedLivre == null) {

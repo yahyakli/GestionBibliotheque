@@ -2,19 +2,14 @@ package controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
+import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import models.Emprunt;
 import models.EmpruntDAO;
 import models.Livre;
@@ -23,6 +18,36 @@ import models.Membre;
 import models.MembreDAO;
 
 public class EmpruntController {
+    @FXML
+    private TableView<Emprunt> tableView;
+
+    @FXML
+    private TableColumn<Emprunt, Integer> idColumn;
+
+    @FXML
+    private TableColumn<Emprunt, String> livreColumn;
+
+    @FXML
+    private TableColumn<Emprunt, String> membreColumn;
+
+    @FXML
+    private TableColumn<Emprunt, String> dateEmpruntColumn;
+
+    @FXML
+    private TableColumn<Emprunt, String> dateRetourColumn;
+
+    @FXML
+    private TableColumn<Emprunt, String> statutColumn;
+
+    @FXML
+    private ComboBox<Livre> livreComboBox;
+
+    @FXML
+    private ComboBox<Membre> membreComboBox;
+
+    @FXML
+    private TextField dateEmpruntField;
+
     private final EmpruntDAO empruntDAO = new EmpruntDAO();
     private final LivreDAO livreDAO = new LivreDAO();
     private final MembreDAO membreDAO = new MembreDAO();
@@ -31,82 +56,21 @@ public class EmpruntController {
     private final ObservableList<Livre> livres = FXCollections.observableArrayList();
     private final ObservableList<Membre> membres = FXCollections.observableArrayList();
 
-    private final TableView<Emprunt> tableView = new TableView<>();
-    private final ComboBox<Livre> livreComboBox = new ComboBox<>();
-    private final ComboBox<Membre> membreComboBox = new ComboBox<>();
-    private final TextField dateEmpruntField = new TextField();
-
-    public Node getView() {
-        BorderPane root = new BorderPane();
-        root.setPadding(new Insets(12));
-
-        TableColumn<Emprunt, Integer> idColumn = new TableColumn<>("ID");
+    @FXML
+    private void initialize() {
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        idColumn.setPrefWidth(60);
-
-        TableColumn<Emprunt, String> livreColumn = new TableColumn<>("Livre");
-        livreColumn.setCellValueFactory(param -> {
-            int livreId = param.getValue().getLivreId();
-            return FXCollections.observableValue(getLivreTitle(livreId));
-        });
-        livreColumn.setPrefWidth(260);
-
-        TableColumn<Emprunt, String> membreColumn = new TableColumn<>("Membre");
-        membreColumn.setCellValueFactory(param -> {
-            int membreId = param.getValue().getMembreId();
-            return FXCollections.observableValue(getMembreName(membreId));
-        });
-        membreColumn.setPrefWidth(260);
-
-        TableColumn<Emprunt, String> dateEmpruntColumn = new TableColumn<>("Date emprunt");
+        livreColumn.setCellValueFactory(param -> FXCollections.observableValue(getLivreTitle(param.getValue().getLivreId())));
+        membreColumn.setCellValueFactory(param -> FXCollections.observableValue(getMembreName(param.getValue().getMembreId())));
         dateEmpruntColumn.setCellValueFactory(new PropertyValueFactory<>("dateEmprunt"));
-        dateEmpruntColumn.setPrefWidth(140);
-
-        TableColumn<Emprunt, String> dateRetourColumn = new TableColumn<>("Date retour");
         dateRetourColumn.setCellValueFactory(new PropertyValueFactory<>("dateRetour"));
-        dateRetourColumn.setPrefWidth(140);
-
-        TableColumn<Emprunt, String> statutColumn = new TableColumn<>("Statut");
         statutColumn.setCellValueFactory(new PropertyValueFactory<>("statut"));
-        statutColumn.setPrefWidth(120);
 
-        tableView.getColumns().addAll(idColumn, livreColumn, membreColumn, dateEmpruntColumn, dateRetourColumn, statutColumn);
         tableView.setItems(emprunts);
         tableView.setPlaceholder(new Label("Aucun emprunt trouvé"));
 
-        GridPane form = new GridPane();
-        form.setHgap(10);
-        form.setVgap(10);
-        form.setPadding(new Insets(16, 0, 0, 0));
-
-        dateEmpruntField.setPromptText("YYYY-MM-DD");
         dateEmpruntField.setText(java.time.LocalDate.now().toString());
 
-        form.add(new Label("Livre"), 0, 0);
-        form.add(livreComboBox, 1, 0);
-        form.add(new Label("Membre"), 0, 1);
-        form.add(membreComboBox, 1, 1);
-        form.add(new Label("Date emprunt"), 0, 2);
-        form.add(dateEmpruntField, 1, 2);
-
-        Button addButton = new Button("Emprunter");
-        Button returnButton = new Button("Retourner");
-        Button deleteButton = new Button("Supprimer");
-
-        addButton.setOnAction(event -> addEmprunt());
-        returnButton.setOnAction(event -> returnEmprunt());
-        deleteButton.setOnAction(event -> deleteEmprunt());
-
-        HBox actions = new HBox(10, addButton, returnButton, deleteButton);
-        actions.setPadding(new Insets(14, 0, 0, 0));
-
-        root.setCenter(tableView);
-        root.setRight(form);
-        root.setBottom(actions);
-        root.setPrefWidth(1000);
-
         refreshLists();
-        return root;
     }
 
     private void refreshLists() {
@@ -121,7 +85,7 @@ public class EmpruntController {
         return livres.stream().filter(l -> l.getId() == id)
                 .map(Livre::getTitre)
                 .findFirst()
-                .orElse("Livres supprimé");
+                .orElse("Livre supprimé");
     }
 
     private String getMembreName(int id) {
@@ -131,6 +95,7 @@ public class EmpruntController {
                 .orElse("Membre supprimé");
     }
 
+    @FXML
     private void addEmprunt() {
         Livre livre = livreComboBox.getValue();
         Membre membre = membreComboBox.getValue();
@@ -151,6 +116,7 @@ public class EmpruntController {
         showAlert(Alert.AlertType.INFORMATION, "Succès", "Emprunt enregistré avec succès.");
     }
 
+    @FXML
     private void returnEmprunt() {
         Emprunt selected = tableView.getSelectionModel().getSelectedItem();
         if (selected == null) {
@@ -171,6 +137,7 @@ public class EmpruntController {
         }
     }
 
+    @FXML
     private void deleteEmprunt() {
         Emprunt selected = tableView.getSelectionModel().getSelectedItem();
         if (selected == null) {
