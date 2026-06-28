@@ -22,9 +22,15 @@ public class DBConnection {
     }
 
     private static void initializeDatabase() {
+        boolean dbJustCreated = false;
         try (Connection serverConnection = DriverManager.getConnection(SERVER_URL, USER, PASSWORD);
              Statement serverStatement = serverConnection.createStatement()) {
-            serverStatement.executeUpdate("CREATE DATABASE IF NOT EXISTS " + DB_NAME + " CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+            try (var rs = serverStatement.executeQuery("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '" + DB_NAME + "'")) {
+                if (!rs.next()) {
+                    serverStatement.executeUpdate("CREATE DATABASE " + DB_NAME + " CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+                    dbJustCreated = true;
+                }
+            }
         } catch (Exception e) {
             System.err.println("Unable to create or access the MySQL database server.");
             e.printStackTrace();
@@ -69,46 +75,9 @@ public class DBConnection {
                     + "FOREIGN KEY (membre_id) REFERENCES membres(id) ON DELETE CASCADE"
                     + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
-            seedDatabase(connection);
         } catch (Exception e) {
             System.err.println("Unable to initialize MySQL schema.");
             e.printStackTrace();
-        }
-    }
-
-    private static void seedDatabase(Connection connection) {
-        try {
-            if (isTableEmpty(connection, "livres")) {
-                connection.createStatement().executeUpdate("INSERT INTO livres (titre, auteur, categorie, isbn, editeur, date_publication, emplacement, quantite) VALUES "
-                        + "('Le Petit Prince', 'Antoine de Saint-Exupéry', 'Classique', '978-2070612758', 'Gallimard', '1943-04-06', 'Rayon A1', 5), "
-                        + "('Clean Code', 'Robert C. Martin', 'Informatique', '978-0132350884', 'Prentice Hall', '2008-08-11', 'Rayon B3', 3), "
-                        + "('Les Misérables', 'Victor Hugo', 'Roman', '978-2253004434', 'Bibliothèque', '1862-01-01', 'Rayon C2', 2)");
-            }
-
-            if (isTableEmpty(connection, "membres")) {
-                connection.createStatement().executeUpdate("INSERT INTO membres (nom, email, telephone, adresse, date_naissance, date_inscription, type_adherent, statut) VALUES "
-                        + "('Emma Dupont', 'emma.dupont@example.com', '+33123456789', '12 rue des Fleurs, Paris', '1990-05-14', '2026-01-15', 'Standard', 'Actif'), "
-                        + "('Marc Leroy', 'marc.leroy@example.com', '+33198765432', '23 avenue Victor Hugo, Lyon', '1985-11-02', '2026-02-20', 'Premium', 'Actif')");
-            }
-
-            if (isTableEmpty(connection, "emprunts")) {
-                connection.createStatement().executeUpdate("INSERT INTO emprunts (livre_id, membre_id, date_emprunt, date_retour_prevue, statut, notes) VALUES "
-                        + "(1, 1, '2026-06-10', '2026-06-24', 'En cours', 'Exemplaire utilisé en club'), "
-                        + "(2, 2, '2026-05-28', '2026-06-11', 'Retourné', 'Retour à temps')");
-            }
-        } catch (Exception e) {
-            System.err.println("Unable to seed MySQL database.");
-            e.printStackTrace();
-        }
-    }
-
-    private static boolean isTableEmpty(Connection connection, String tableName) {
-        try (var query = connection.createStatement();
-             var results = query.executeQuery("SELECT COUNT(*) FROM " + tableName)) {
-            return results.next() && results.getInt(1) == 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
         }
     }
 
